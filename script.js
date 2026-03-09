@@ -26,12 +26,14 @@ function startChrono() {
     timerDisplay.textContent = formatTime(elapsedTime);
   }, 10);
   running = true;
+  startStopButton.textContent = "Stop";
 }
 
 // STOP TIMER
 function stopTimer() {
   clearInterval(timerInterval);
   running = false;
+  startStopButton.textContent = "Start";
   if (elapsedTime > 0) {
     savedTimes.push(formatTime(elapsedTime));
     savedTimes.sort((a, b) => toMs(a) - toMs(b));
