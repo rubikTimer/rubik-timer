@@ -1,5 +1,4 @@
 let timerDisplay = document.getElementById("timer");
-let startStopButton = document.getElementById("startStop");
 let resetButton = document.getElementById("reset");
 let timesList = document.getElementById("timesList");
 let scrambleDisplay = document.getElementById("scramble");
@@ -9,6 +8,8 @@ let timerInterval = null;
 let running = false;
 
 let spacePressed = false;
+let ready = false;
+
 
 // carica tempi salvati
 let savedTimes = JSON.parse(localStorage.getItem("rubikTimes")) || [];
@@ -18,10 +19,8 @@ generateScramble();
 updateAverage();
 
 
-// START CHRONO
+// START TIMER
 function startChrono() {
-
-  elapsedTime = 0;
 
   const startTime = Date.now();
 
@@ -206,13 +205,16 @@ document.addEventListener("keydown", (e) => {
 
     spacePressed = true;
 
-    if (!running) {
+    if (running) {
 
-      timerDisplay.style.color = "green";
+      stopTimer();
 
     } else {
 
-      stopTimer();
+      ready = true;
+
+      timerDisplay.textContent = "00:00.00";
+      timerDisplay.style.color = "green";
 
     }
 
@@ -227,11 +229,13 @@ document.addEventListener("keyup", (e) => {
 
     spacePressed = false;
 
-    timerDisplay.style.color = "black";
+    if (ready && !running) {
 
-    if (!running) {
+      timerDisplay.style.color = "black";
 
       startChrono();
+
+      ready = false;
 
     }
 
