@@ -2,137 +2,201 @@ let timerDisplay = document.getElementById("timer");
 let startStopButton = document.getElementById("startStop");
 let resetButton = document.getElementById("reset");
 let timesList = document.getElementById("timesList");
+let scrambleDisplay = document.getElementById("scramble");
 
 let elapsedTime = 0;
 let timerInterval = null;
 let countdownInterval = null;
 let running = false;
-let countdownTime = 5; // 5 secondi
+let countdownTime = 5;
 
-// Carica i tempi salvati
+let spacePressed = false;
+
+// Carica tempi salvati
 let savedTimes = JSON.parse(localStorage.getItem("rubikTimes")) || [];
-updateTimesList();
 
-// Start / Stop
+updateTimesList();
+generateScramble();
+updateAverage();
+
+
+// START / STOP BUTTON
+
 startStopButton.addEventListener("click", () => {
-  if (!running) {
+  if(!running){
     startCountdown();
-  } else {
+  }else{
     stopTimer();
   }
 });
 
-// Reset
+
+// RESET
+
 resetButton.addEventListener("click", () => {
   stopTimer();
   elapsedTime = 0;
   timerDisplay.textContent = "00:00.00";
-
   savedTimes = [];
   localStorage.removeItem("rubikTimes");
   updateTimesList();
+  updateAverage();
 });
 
-// Funzione countdown
-function startCountdown() {
+
+// COUNTDOWN
+
+function startCountdown(){
   countdownTime = 5;
   timerDisplay.textContent = countdownTime;
   startStopButton.disabled = true;
-
-  countdownInterval = setInterval(() => {
+  countdownInterval = setInterval(()=>{
     countdownTime--;
     timerDisplay.textContent = countdownTime;
-    if (countdownTime <= 0) {
+    if(countdownTime <= 0){
       clearInterval(countdownInterval);
-      countdownInterval = null; // ✅ resetta a null
+      countdownInterval = null;
       startStopButton.disabled = false;
       startChrono();
     }
-  }, 1000);
+  },1000)
 }
 
-// Funzione cronometro
-function startChrono() {
+
+// CHRONO
+
+function startChrono(){
   const startTime = Date.now() - elapsedTime;
-  timerInterval = setInterval(() => {
+  timerInterval = setInterval(()=>{
     elapsedTime = Date.now() - startTime;
     timerDisplay.textContent = formatTime(elapsedTime);
-  }, 10);
-  startStopButton.textContent = "Stop";
-  running = true;
+  },10)
+  startStopButton.textContent="Stop";
+  running=true;
 }
 
-// Stop timer
-function stopTimer() {
+
+// STOP
+
+function stopTimer(){
   clearInterval(timerInterval);
   clearInterval(countdownInterval);
-  countdownInterval = null; // ✅ resetta a null
-  startStopButton.textContent = "Start";
-  running = false;
-
-  if (elapsedTime > 0) {
+  countdownInterval = null;
+  startStopButton.textContent="Start";
+  running=false;
+  if(elapsedTime>0){
     savedTimes.push(formatTime(elapsedTime));
-    savedTimes.sort((a,b) => toMs(a) - toMs(b));
-    localStorage.setItem("rubikTimes", JSON.stringify(savedTimes));
+    savedTimes.sort((a,b)=>toMs(a)-toMs(b));
+    localStorage.setItem("rubikTimes",JSON.stringify(savedTimes));
     updateTimesList();
-    elapsedTime = 0;
+    updateAverage();
+    elapsedTime=0;
+    generateScramble();
   }
 }
 
-// Formatta tempo
-function formatTime(ms) {
-  const minutes = Math.floor(ms / 60000);
-  const seconds = Math.floor((ms % 60000) / 1000);
-  const centiseconds = Math.floor((ms % 1000) / 10);
-  return (
-    String(minutes).padStart(2, "0") + ":" +
-    String(seconds).padStart(2, "0") + "." +
-    String(centiseconds).padStart(2, "0")
-  );
+
+// FORMAT TIME
+
+function formatTime(ms){
+  const minutes=Math.floor(ms/60000);
+  const seconds=Math.floor((ms%60000)/1000);
+  const centiseconds=Math.floor((ms%1000)/10);
+  return(
+    String(minutes).padStart(2,"0")+":"+
+    String(seconds).padStart(2,"0")+"."+
+    String(centiseconds).padStart(2,"0")
+  )
 }
 
-// Converte "mm:ss.cc" in millisecondi
-function toMs(t) {
-  let parts = t.split(/[:.]/);
-  return parseInt(parts[0]) * 60000 + parseInt(parts[1]) * 1000 + parseInt(parts[2]) * 10;
+
+// STRING → MS
+
+function toMs(t){
+  let parts=t.split(/[:.]/);
+  return parseInt(parts[0])*60000+
+  parseInt(parts[1])*1000+
+  parseInt(parts[2])*10;
 }
 
-// Aggiorna lista dei tempi
-function updateTimesList() {
-  timesList.innerHTML = "";
-  if (savedTimes.length === 0) return;
 
-  let timesMs = savedTimes.map(toMs);
-  let minTime = Math.min(...timesMs);
-  let maxTime = Math.max(...timesMs);
+// TIMES LIST
 
-  savedTimes.forEach((time, index) => {
-    let li = document.createElement("li");
-    li.textContent = time;
-    let tMs = timesMs[index];
-
-    if (tMs === minTime) {
-      li.style.color = "green";
-      li.style.fontWeight = "bold";
-    } else if (tMs === maxTime) {
-      li.style.color = "red";
-      li.style.fontWeight = "bold";
-    } else {
-      li.style.color = "black";
+function updateTimesList(){
+  timesList.innerHTML="";
+  if(savedTimes.length===0) return;
+  let timesMs=savedTimes.map(toMs);
+  let minTime=Math.min(...timesMs);
+  let maxTime=Math.max(...timesMs);
+  savedTimes.forEach((time,index)=>{
+    let li=document.createElement("li");
+    li.textContent=time;
+    let tMs=timesMs[index];
+    if(tMs===minTime){
+      li.style.color="green";
+      li.style.fontWeight="bold";
+    }else if(tMs===maxTime){
+      li.style.color="red";
+      li.style.fontWeight="bold";
+    }else{
+      li.style.color="black";
     }
-
     timesList.appendChild(li);
   });
+
 }
 
-// Gestisce barra spaziatrice
-document.addEventListener("keydown", (e) => {
-  if (e.code === "Space") {
-    e.preventDefault(); // evita lo scroll della pagina
-    if (!running && !countdownInterval) {
-      startCountdown(); // se fermo, parte il countdown
-    } else if (running) {
-      stopTimer(); // se in corso, stoppa il cronometro
+
+// AVERAGE OF 5
+
+function updateAverage(){
+
+if(savedTimes.length<5){
+  document.getElementById("avg5").textContent="Avg5: --";
+  return;
+  }
+  let last5=savedTimes.slice(0,5).map(toMs);
+  let avg=last5.reduce((a,b)=>a+b)/5;
+  document.getElementById("avg5").textContent="Avg5: "+formatTime(avg);
+}
+
+
+// SCRAMBLE GENERATOR
+
+function generateScramble(){
+  const moves=["R","L","U","D","F","B"];
+  const mods=["","'","2"];
+  let scramble=[];
+  for(let i=0;i<20;i++){
+    let move=moves[Math.floor(Math.random()*moves.length)];
+    let mod=mods[Math.floor(Math.random()*mods.length)];
+    scramble.push(move+mod);
+  }
+  scrambleDisplay.textContent=scramble.join(" ");
+}
+
+
+// SPACEBAR CONTROL
+
+document.addEventListener("keydown",(e)=>{
+  if(e.code==="Space" && !spacePressed){
+    e.preventDefault();
+    spacePressed=true;
+    if(!running && !countdownInterval){
+      timerDisplay.style.color="green";
+    }
+  }
+});
+
+
+document.addEventListener("keyup",(e)=>{
+  if(e.code==="Space"){
+    spacePressed=false;
+    timerDisplay.style.color="black";
+    if(!running && !countdownInterval){
+      startCountdown();
+    }else if(running){
+      stopTimer();
     }
   }
 });

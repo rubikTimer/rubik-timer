@@ -1,45 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rubik Timer</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rubik Cube Timer Online</title>
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-  <div class="container">
-    <h1>Rubik Timer</h1>
-    <div id="timer">00:00.00</div>
-    <div class="buttons">
-      <button id="startStop">Start</button>
-      <button id="reset">Reset</button>
-    </div>
 
-    <h2>Times</h2>
-    <ul id="timesList"></ul>
+<div class="container">
 
-    <!-- <div class="ad-banner">
-      <p>Check out the <a href="https://www.aliexpress.com/item/1005004968460363.html" target="_blank">MoYu RS3M V5</a> cube!</p>
-    </div> -->
-  </div>
+<h1>Rubik Timer</h1>
 
-  <script src="script.js"></script>
+<div id="scramble"></div>
 
-  <!-- Default Statcounter code for Rubik Timer https://rubiktimer.github.io/rubik-timer/ -->
-  <script type="text/javascript">
-    var sc_project=13209648; 
-    var sc_invisible=1; 
-    var sc_security="9338f92a"; 
-  </script>
-  <script type="text/javascript" src="https://www.statcounter.com/counter/counter.js" async>
-  </script>
-  <noscript>
-    <div class="statcounter">
-      <a title="Web Analytics" href="https://statcounter.com/" target="_blank">
-        <img class="statcounter" src="https://c.statcounter.com/13209648/0/9338f92a/1/" alt="Web Analytics" referrerPolicy="no-referrer-when-downgrade">
-      </a>
-    </div>
-  </noscript>
-  <!-- End of Statcounter Code -->
+<div id="timer">00:00.00</div>
+
+<div class="buttons">
+<button id="startStop">Start</button>
+<button id="reset">Reset</button>
+</div>
+
+<h2>Times</h2>
+
+<p id="avg5">Avg5: --</p>
+
+<ul id="timesList"></ul>
+
+</div>
+
+<script src="script.js"></script>
+
+<!-- Statcounter -->
+<script type="text/javascript">
+var sc_project=13209648; 
+var sc_invisible=1; 
+var sc_security="9338f92a"; 
+</script>
+<script src="https://www.statcounter.com/counter/counter.js" async></script>
+
 </body>
 </html>
