@@ -2,6 +2,7 @@ let timerDisplay = document.getElementById("timer");
 let resetButton = document.getElementById("reset");
 let timesList = document.getElementById("timesList");
 let scrambleDisplay = document.getElementById("scramble");
+let startStopButton = document.getElementById("startStop");
 
 let elapsedTime = 0;
 let timerInterval = null;
@@ -148,7 +149,8 @@ document.addEventListener("keyup", (e) => {
   }
 });
 
-startStopButton.addEventListener("mousedown", () => {
+// START BUTTON - desktop + mobile
+function startButtonReady() {
   if (running) {
     stopTimer();
   } else {
@@ -156,12 +158,26 @@ startStopButton.addEventListener("mousedown", () => {
     timerDisplay.textContent = "00:00.00";
     timerDisplay.style.color = "green";
   }
-});
+}
 
-startStopButton.addEventListener("mouseup", () => {
+function startButtonRelease() {
   if (ready && !running) {
     timerDisplay.style.color = "black";
     startChrono();
     ready = false;
   }
-});
+}
+
+startStopButton.addEventListener("mousedown", startButtonReady);
+startStopButton.addEventListener("mouseup", startButtonRelease);
+
+// mobile touch support
+startStopButton.addEventListener("touchstart", (e) => {
+  e.preventDefault(); 
+  startButtonReady();
+}, {passive: false});
+
+startStopButton.addEventListener("touchend", (e) => {
+  e.preventDefault();
+  startButtonRelease();
+}, {passive: false});
