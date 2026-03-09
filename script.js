@@ -37,13 +37,14 @@ resetButton.addEventListener("click", () => {
 function startCountdown() {
   countdownTime = 5;
   timerDisplay.textContent = countdownTime;
-  startStopButton.disabled = true; // blocca pulsante durante countdown
+  startStopButton.disabled = true;
 
   countdownInterval = setInterval(() => {
     countdownTime--;
     timerDisplay.textContent = countdownTime;
     if (countdownTime <= 0) {
       clearInterval(countdownInterval);
+      countdownInterval = null; // ✅ resetta a null
       startStopButton.disabled = false;
       startChrono();
     }
@@ -65,16 +66,16 @@ function startChrono() {
 function stopTimer() {
   clearInterval(timerInterval);
   clearInterval(countdownInterval);
+  countdownInterval = null; // ✅ resetta a null
   startStopButton.textContent = "Start";
   running = false;
 
   if (elapsedTime > 0) {
-    // salva il tempo solo se il cronometro è partito
     savedTimes.push(formatTime(elapsedTime));
     savedTimes.sort((a,b) => toMs(a) - toMs(b));
     localStorage.setItem("rubikTimes", JSON.stringify(savedTimes));
     updateTimesList();
-    elapsedTime = 0; // reset per il prossimo Start
+    elapsedTime = 0;
   }
 }
 
